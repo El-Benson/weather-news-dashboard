@@ -1,14 +1,15 @@
-import { fetchNews } from "../api/newsAPI.js";
+import { showLoadingSpinner, updateNewsUI } from "./ui.js";
 
-export async function displayNews() {
-    const newsContainer = document.getElementById("news");
-    const newsArticles = await fetchNews();
+const API_KEY = "your_newsapi_api_key"; 
 
-    newsContainer.innerHTML = newsArticles.map(article => `
-        <article>
-            <h3>${article.title}</h3>
-            <p>${article.description}</p>
-            <a href="${article.url}" target="_blank">Read more</a>
-        </article>
-    `).join("");
+export async function fetchNews() {
+    showLoadingSpinner("news");
+
+    try {
+        const response = await fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`);
+        const data = await response.json();
+        updateNewsUI(data.articles);
+    } catch (error) {
+        document.getElementById("news").textContent = "Failed to load news.";
+    }
 }

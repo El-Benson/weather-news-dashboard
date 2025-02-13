@@ -1,14 +1,15 @@
-import { fetchWeather } from "../api/weatherAPI.js";
+import { showLoadingSpinner, updateWeatherUI } from "./ui.js";
 
-export async function displayWeather() {
-    const weatherContainer = document.getElementById("weather");
-    const weatherData = await fetchWeather();
+const API_KEY = "your_openweathermap_api_key"; 
 
-    if (weatherData) {
-        weatherContainer.innerHTML = `
-            <h2>Weather in ${weatherData.name}</h2>
-            <p>Temperature: ${weatherData.main.temp}°C</p>
-            <p>Condition: ${weatherData.weather[0].description}</p>
-        `;
+export async function fetchWeather() {
+    showLoadingSpinner("weather");
+
+    try {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=New York&units=metric&appid=${API_KEY}`);
+        const data = await response.json();
+        updateWeatherUI(data);
+    } catch (error) {
+        document.getElementById("weather").textContent = "Failed to load weather data.";
     }
 }
